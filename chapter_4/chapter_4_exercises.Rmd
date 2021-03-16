@@ -1,0 +1,144 @@
+---
+title: "Chapter 4 Exercises"
+author: "Morgan Grovenburg"
+date: "3/16/2021"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      warning = FALSE,
+                      message = FALSE)
+```
+
+### 4.8 Exercises
+
+```{r libraries, echo=FALSE}
+# Install packages only once
+#install.packages("vroom")
+#install.packages('DiagrammeR')
+library(shiny)
+library(vroom)
+library(tidyverse)
+```
+
+```{r download-data, echo=FALSE}
+dir.create("neiss")
+download <- function(name) {
+  url <- "https://github.com/hadley/mastering-shiny/raw/master/neiss/"
+  download.file(paste0(url, name), paste0("neiss/", name), quiet = TRUE)
+}
+download("injuries.tsv.gz")
+download("population.tsv")
+download("products.tsv")
+```
+
+```{r datasets, echo=FALSE}
+injuries <- vroom::vroom("neiss/injuries.tsv.gz")
+injuries
+
+products <- vroom::vroom("neiss/products.tsv")
+products
+
+population <- vroom::vroom("neiss/population.tsv")
+population
+```
+
+#### 1. Draw the reactive graph for each app.
+
+```{r draw-library}
+library(DiagrammeR)
+```
+
+##### Reactive Graph for 4.4 Prototype
+
+```{r reactive-graph-prototype, echo=FALSE}
+mermaid("
+graph LR
+A[code select] --- B>selected]
+B>selected] --- C>diag table]
+B>selected] --- D>body_part table]
+B>selected] --- E>location table]
+B>selected] --- F>summary]
+G[population] --- F>summary]
+F>summary] --- H>age_sex plot]
+")
+```
+
+##### Reactive Graph for 4.5 Polish Tables
+
+```{r reactive-graph-polishtables, echo=FALSE}
+mermaid("
+graph LR
+A[code select] --- B>selected]
+B>selected] --- C>diag table]
+B>selected] --- D>body_part table]
+B>selected] --- E>location table]
+B>selected] --- F>summary]
+G[population] --- F>summary]
+F>summary] --- H>age_sex plot]
+")
+```
+
+##### Reactive Graph for 4.6 Rate vs count
+
+```{r reactive-graph-ratevscount, echo=FALSE}
+mermaid("
+graph LR
+A[code select] --- B>selected]
+B>selected] --- C>diag table]
+B>selected] --- D>body_part table]
+B>selected] --- E>location table]
+B>selected] --- F>summary]
+G[population] --- F>summary]
+F>summary] --- H>age_sex plot]
+I[y select] --- H>age_sex plot]
+")
+```
+
+##### Reactive Graph for 4.7 Narrative
+
+```{r reactive-graph-narrative, echo=FALSE}
+mermaid("
+graph LR
+A[code select] --- B>selected]
+B>selected] --- C>diag table]
+B>selected] --- D>body_part table]
+B>selected] --- E>location table]
+B>selected] --- F>summary]
+G[population] --- F>summary]
+F>summary] --- H>age_sex plot]
+I[y select] --- H>age_sex plot]
+B>selected] --- J>narrative_sample]
+L[story action] --- J>narrative_sample]
+J>narrative_sample] --- M>narrative text]
+")
+```
+
+#### 2. What happens if you flip `fct_infreq()` and `fct_lump()` in the code that reduces the summary tables?
+
+```{r, error=TRUE}
+# Original
+injuries %>%
+  mutate(diag = fct_lump(fct_infreq(diag), n = 5)) %>%
+  group_by(diag) %>%
+  summarise(n = as.integer(sum(weight)))
+
+# Flipped
+injuries %>%
+  mutate(diag = fct_infreq(fct_lump(diag), n = 5)) %>%
+  group_by(diag) %>%
+  summarise(n = as.integer(sum(weight)))
+```
+
+
+#### 3. Add an input control that lets the user decide how many rows to show in the summary tables.
+
+#### 4. Provide a way to step through every narrative systematically with forward and backward buttons.
+
+##### Advanced: Make the list of narratives “circular” so that advancing forward from the last narrative takes you to the first.
+
+```{r}
+
+```
