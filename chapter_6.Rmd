@@ -1,0 +1,139 @@
+---
+title: "Chapter 6 Layout, themes, HTML"
+author: "Morgan Grovenburg, Retention Specialist"
+date: "3/23/2021"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r libraries, include=FALSE}
+# Install packages only once
+#install.packages("thematic")
+library(shiny)
+library(tidyverse)
+library(thematic)
+library(bslib)
+```
+
+
+### 6.2.4 Exercises
+
+#### 1. Read the documentation of `sidebarLayout()` to determine the width (in columns) of the sidebar and the main panel. Can you recreate its appearance using `fluidRow()` and `column()`? What are you missing?
+
+##### `sidebarLayout()`:
+
+```{r sidebar, echo=FALSE}
+ui <- fluidPage(
+  titlePanel("Central limit theorem"),
+  sidebarLayout(
+    sidebarPanel(
+      numericInput("m", "Number of samples:", 2, min = 1, max = 100)
+    ),
+    mainPanel(
+      plotOutput("hist")
+    )
+  )
+)
+server <- function(input, output, session) {
+  output$hist <- renderPlot({
+    means <- replicate(1e4, mean(runif(input$m)))
+    hist(means, breaks = 20)
+  }, res = 96)
+}
+shinyApp(ui, server)
+```
+
+##### `fluidRow()` and `column()`:
+
+```{r column, echo = FALSE}
+ui <- fluidPage(
+  titlePanel("Central limit theorem"),
+  fluidRow(
+    column(4,
+      numericInput("m", "Number of samples:", 2, min = 1, max = 100)
+    ),
+    column(8,
+      plotOutput("hist")
+    )
+  )
+)
+server <- function(input, output, session) {
+  output$hist <- renderPlot({
+    means <- replicate(1e4, mean(runif(input$m)))
+    hist(means, breaks = 20)
+  }, res = 96)
+}
+shinyApp(ui, server)
+```
+
+Missing the grey box around "Number of samples".
+
+#### 2. Modify the Central Limit Theorem app to put the sidebar on the right instead of the left.
+
+```{r right, echo=FALSE}
+ui <- fluidPage(
+  titlePanel("Central limit theorem"),
+  sidebarLayout(
+    mainPanel(
+      plotOutput("hist")
+    ),
+    sidebarPanel(
+      numericInput("m", "Number of samples:", 2, min = 1, max = 100)
+    )
+  )
+)
+server <- function(input, output, session) {
+  output$hist <- renderPlot({
+    means <- replicate(1e4, mean(runif(input$m)))
+    hist(means, breaks = 20)
+  }, res = 96)
+}
+shinyApp(ui, server)
+```
+
+#### 3. Create an app with that contains two plots, each of which takes up half of the width. Put the controls in a full width container below the plots.
+
+```{r, echo = FALSE}
+ui <- fluidPage(
+  titlePanel("Central limit theorem"),
+  fluidRow(
+    column(6,
+           plotOutput("hist2")
+    ),
+    column(6,
+           plotOutput("hist")
+    )
+  ),
+  fluidRow(
+    column(12,
+           numericInput("m", "Number of samples:", 2, min = 1, max = 100)
+    )
+  )
+)
+server <- function(input, output, session) {
+  output$hist <- renderPlot({
+    means <- replicate(1e4, mean(runif(input$m)))
+    hist(means, breaks = 20)
+  }, res = 96)
+  output$hist2 <- renderPlot({
+    means <- replicate(1e4, mean(runif(input$m)))
+    hist(means, breaks = 10)
+  }, res = 96)
+}
+shinyApp(ui, server)
+```
+
+### 6.5.4 Exercises
+
+#### 1. Use `bslib::bs_theme_preview()` to make the ugliest theme you can.
+
+Put the following code into the Console (it will not run in RMarkdown):
+
+```{r, eval=FALSE}
+bslib::bs_theme_preview()
+```
+
